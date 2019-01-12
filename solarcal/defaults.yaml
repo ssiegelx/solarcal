@@ -1,0 +1,14 @@
+redundantcal:
+    data_dir: "/mnt/gong/archive"
+    acq: "20180818T013141Z_chimeN2_corr"
+    output_dir: "/mnt/gong/ssiegel/test/solar"
+    output_prefix: 
+    bad_input_file: "/mnt/gong/ssiegel/test/solar/bad_inputs_20180820_20180831.pickle"
+    niceness: 10
+    downsample: 5
+    freq_start: 2
+    freq_stop: 3
+    include_auto: False
+    include_intracyl: False
+    include_crosspol: False
+    fix_degen: False
