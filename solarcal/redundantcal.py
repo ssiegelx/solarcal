@@ -378,7 +378,7 @@ def main(config_file=None, logging_params=DEFAULT_LOGGING):
             polcnt += nubase
             mlog.info("%d unique baselines" % polcnt)
 
-        nsky = bmap.size
+        nsky = ubaseline.shape[0]
 
         # Create arrays to hold the results
         ores = {}
@@ -493,15 +493,17 @@ def main(config_file=None, logging_params=DEFAULT_LOGGING):
                         with h5py.File(filename, 'r') as hf:
 
                             snap = hf['vis'][find, :, tt]
-                            wsnap = wnoise * (hf['flags/vis_weight'][find, :, tt] > 0.0).astype(np.float32)
+                            wsnap = wnoise * ((hf['flags/vis_weight'][find, :, tt] > 0.0) & (np.abs(snap) > 0.0)).astype(np.float32)
 
                         # Extract relevant products for this polarization
                         snap = snap[p_prod]
                         wsnap = wsnap[p_prod]
 
-                        # Turn into amplitude and phase
-                        amp = np.log(np.abs(snap))
-                        phi = np.angle(snap)
+                        # Turn into amplitude and phase, avoiding NaN
+                        mask = (wsnap > 0.0)
+
+                        amp = np.where(mask, np.log(np.abs(snap)), 0.0)
+                        phi = np.where(mask, np.angle(snap), 0.0)
 
                         # Deal with phase wrapping
                         for aa, bb in zip(edges[:-1], edges[1:]):
